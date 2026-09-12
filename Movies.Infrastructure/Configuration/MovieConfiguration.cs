@@ -19,6 +19,11 @@ namespace Movies.Infrastructure.Configuration
                 .HasMany(m => m.MovieGenres)
                 .WithOne(m => m.Movie)
                 .HasForeignKey(m => m.MovieId);
+            
+            builder
+                .HasMany(m => m.MovieActors)
+                .WithOne(m => m.Movie)
+                .HasForeignKey(m => m.MovieId);
 
             builder
                 .Property(m => m.VoteAverage)

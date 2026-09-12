@@ -1,5 +1,3 @@
-using System.Dynamic;
-
 namespace Movies.Domain.Entities
 {
     public class Movie
@@ -12,7 +10,9 @@ namespace Movies.Domain.Entities
         public int VoteCount {get;set;}
         public decimal Popularity {get;set;}
         public decimal VoteAverage {get;set;}
+        public string OriginalLanguage {get;set;}
         
         public ICollection<MovieGenre> MovieGenres {get;set;}
+        public ICollection<MovieActor> MovieActors {get;set;}
     }
 }
