@@ -12,11 +12,22 @@ Three projects:
 
 Data access is **EF Core** against SQL Server. Local dev database is `MoviesDb` on the local `SQLEXPRESS` instance, Windows/trusted auth (connection string in `Movies.API/appsettings.json`).
 
-Run migrations from the repo root:
+Create new migrations from the repo root:
 ```
 dotnet ef migrations add <Name> --project Movies.Infrastructure --startup-project Movies.API
-dotnet ef database update --project Movies.Infrastructure --startup-project Movies.API
 ```
+
+To bring the database schema and seed data up to date, use the app itself rather than raw `dotnet ef database update` — the EF CLI can only apply migrations, it can't run our seeding code:
+```
+dotnet run --project Movies.API -- migrate
+```
+This applies any pending migrations, then seeds — but only the very first time the database is created (checked via whether any migration has been applied yet, *not* whether `Movies` is empty, so manually clearing seeded data later won't trigger a reseed) — then exits without starting the web host. A plain `dotnet run --project Movies.API` does the same migrate+seed step automatically before it starts listening, so this command is only needed when you want the database updated without launching the API.
+
+## Seeding
+
+`Movies.Infrastructure/Seeding/` seeds `Movies`, `Genres`, and `MovieGenres` from `Movies.Infrastructure/OriginalData/mymoviedb.csv` (~9,827 rows) via CsvHelper. One file per entity (`GenreSeeder.cs`, `MovieSeeder.cs`, `MovieGenreSeeder.cs`), orchestrated by `DataSeeder.cs`: genres are seeded first (deduped from each row's comma-separated `Genre` column), then movies, then `MovieGenres` joins built by re-splitting each row's genre list against the now-persisted movies/genres. Plain static classes, no DI — same style as `DependencyInjection.AddInfrastructure`.
+
+`Actors` have no source data in the CSV, so `ActorSeeder.cs` generates 500 names instead, combining small first/last name pools with a fixed-seed `Random` (reproducible across drop/recreate cycles, not `Random.Shared`). `MovieActorSeeder.cs` then assigns each movie a random 3–6 person cast from that pool (same fixed-seed approach), and guarantees every actor ends up credited in at least one movie.
 
 ## Vertical slice structure
 

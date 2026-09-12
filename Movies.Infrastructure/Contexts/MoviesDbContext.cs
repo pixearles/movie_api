@@ -23,5 +23,7 @@ public class MoviesDbContext : DbContext
         modelBuilder.ApplyConfiguration(new MovieConfiguration());
         modelBuilder.ApplyConfiguration(new GenreConfiguration());
         modelBuilder.ApplyConfiguration(new MovieGenreConfiguration());
+        modelBuilder.ApplyConfiguration(new MovieActorConfiguration());
+        modelBuilder.ApplyConfiguration(new ActorConfiguration());
     }
 }

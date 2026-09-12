@@ -27,7 +27,7 @@ namespace Movies.Infrastructure.Configuration
 
             builder
                 .Property(m => m.VoteAverage)
-                .HasPrecision(2,1);
+                .HasPrecision(3,1);
             
             builder
                 .Property(m => m.Popularity)
