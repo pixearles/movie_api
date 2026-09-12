@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="Movies.API/Movies.API.csproj" />
+  <Project Path="Movies.Domain/Movies.Domain.csproj" />
+  <Project Path="Movies.Infrastructure/Movies.Infrastructure.csproj" />
+</Solution>
