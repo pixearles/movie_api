@@ -38,7 +38,7 @@ Features/
   {Feature}/
     {SubFeature}/
       v1/
-        Models/           Request(s) and Response(s)
+        Models/           Request(s) and Response(s) — or nested directly in the grouping class, see below
         Controller.cs
         Handler.cs
         Repository.cs     (when the slice needs its own data access)
@@ -48,39 +48,56 @@ Features/
 
 Version folders are always `v1` for this app (no versioning strategy beyond that yet).
 
-**Pattern**: each `.cs` file in a slice's `v1/` folder (except `Models/`) is a **partial declaration of one shared class**, named after the sub-feature and ending in `Controller` (e.g. `GetMovieController`) — ASP.NET Core's default controller discovery requires the class name to end in `Controller` or carry `[Controller]`. Each file contributes a nested interface + implementation pair for its concern:
+**Pattern**: each sub-feature has a **grouping class** named after it (e.g. `GetMovie`, `SearchMovies`) — this is `partial`, and `Handler.cs`, `Repository.cs`, `Validator.cs`, and the request/response models are all nested inside it as separate files each contributing one piece:
 
 - `Handler.cs` → nested `IHandler` / `Handler`
 - `Repository.cs` → nested `IRepository` / `Repository`
 - `Validator.cs` → nested `IValidator` / `Validator`
-- `Controller.cs` → the `[ApiController]`/`[Route]` declaration, DI constructor, and action methods
+- Models → nested `Request`, `Response`, and any supporting types (e.g. `MovieSummary`), named plainly (not repeating the feature name) since they're already scoped under the grouping class
+
+The **controller is a separate, non-partial class**, named after the sub-feature with a `Controller` suffix (e.g. `GetMovieController`, `SearchMoviesController`) — ASP.NET Core's default controller discovery requires this suffix (or `[Controller]`). It is *not* part of the grouping class's partial declaration, since the grouping class's own name doesn't end in `Controller`. The controller references the grouping class's nested types with the grouping class as a qualifier (e.g. `GetMovie.IHandler`, `GetMovie.Response`).
 
 Example shape:
 ```csharp
 // Controller.cs
 [ApiController]
 [Route("api/movies/{id:int}")]
-public partial class GetMovieController : ControllerBase
+public class GetMovieController : ControllerBase
 {
-    private readonly IHandler _handler;
+    private readonly GetMovie.IHandler _handler;
 
-    public GetMovieController(IHandler handler) => _handler = handler;
+    public GetMovieController(GetMovie.IHandler handler) => _handler = handler;
 
     [HttpGet]
-    public async Task<ActionResult<GetMovieResponse>> Get(int id) => await _handler.HandleAsync(id);
+    public async Task<ActionResult<GetMovie.Response>> Get(int id) => await _handler.HandleAsync(id);
 }
 
 // Handler.cs
-public partial class GetMovieController
+public partial class GetMovie
 {
     public interface IHandler
     {
-        Task<GetMovieResponse> HandleAsync(int id);
+        Task<Response> HandleAsync(int id);
     }
 
     public class Handler(IRepository repository) : IHandler
     {
-        public async Task<GetMovieResponse> HandleAsync(int id) => await repository.GetAsync(id);
+        public async Task<Response> HandleAsync(int id) => await repository.GetAsync(id);
+    }
+}
+
+// Models (nested in the grouping class, e.g. in Models.cs or split further if useful)
+public partial class GetMovie
+{
+    public class Request
+    {
+        public int Id { get; set; }
+    }
+
+    public class Response
+    {
+        public int Id { get; set; }
+        public string Title { get; set; } = string.Empty;
     }
 }
 ```
