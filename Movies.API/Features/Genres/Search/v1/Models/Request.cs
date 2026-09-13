@@ -1,6 +1,6 @@
-namespace Movies.API.Features.Actors.Search.v1
+namespace Movies.API.Features.Genres.Search.v1
 {
-    public partial class SearchActors
+    public partial class SearchGenres
     {
         public class Request
         {

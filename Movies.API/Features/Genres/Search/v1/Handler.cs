@@ -1,26 +1,26 @@
 using Microsoft.AspNetCore.Mvc;
 
-namespace Movies.API.Features.Actors.Search.v1
+namespace Movies.API.Features.Genres.Search.v1
 {
-    public partial class SearchActors
+    public partial class SearchGenres
     {
         public interface IHandler
         {
-            Task<ActionResult<Response>> SearchActorsAsync(Request request);
+            Task<ActionResult<Response>> SearchGenresAsync(Request request);
         }
 
         public class Handler(IRepository repository) : IHandler
         {
-            public async Task<ActionResult<Response>> SearchActorsAsync(Request request)
+            public async Task<ActionResult<Response>> SearchGenresAsync(Request request)
             {
-                var (actors, totalCount) = await repository.SearchActorsAsync(request);
+                var (genres, totalCount) = await repository.SearchGenresAsync(request);
 
                 return new Response
                 {
-                    Actors = actors.Select(a => new ActorSummary
+                    Genres = genres.Select(g => new GenreDetails
                     {
-                        Id = a.Id,
-                        Name = a.Name
+                        Id = g.Id,
+                        Name = g.Name
                     }).ToList(),
                     PageNumber = request.PageNumber,
                     PageSize = request.PageSize,
