@@ -1,0 +1,44 @@
+@page "/movies/{Id:int}"
+
+<PageTitle>@(_details?.Title ?? "Movie")</PageTitle>
+
+@if (_details is null)
+{
+    <MudProgressCircular Indeterminate="true" />
+}
+else
+{
+    <MudStack Row="true" Spacing="4" AlignItems="AlignItems.Stretch">
+        <MudImage Src="@_details.PosterUrl" Alt="@_details.Title" ObjectFit="ObjectFit.Cover" Style="width:280px; flex:0 0 auto;" Class="rounded-lg" />
+
+        <MudStack Spacing="2" Class="flex-grow-1">
+            <MudText Typo="Typo.h3">@_details.Title</MudText>
+
+            <MudStack Row="true" Spacing="4" AlignItems="AlignItems.Center">
+                <MudStack Row="true" Spacing="1" AlignItems="AlignItems.Center">
+                    <MudText Typo="Typo.body1">@_details.AverageVote.ToString("0.0")</MudText>
+                    <MudIcon Icon="@Icons.Material.Filled.Star" Style="color:#F9A825;" Size="Size.Small" />
+                </MudStack>
+                <MudText Typo="Typo.body1">Release Date: @_details.ReleaseDate.ToString("dd/MM/yyyy")</MudText>
+                <MudText Typo="Typo.body1">@_details.OriginalLanguage.ToUpperInvariant()</MudText>
+            </MudStack>
+
+            <MudStack Row="true" Wrap="Wrap.Wrap" Spacing="1">
+                @foreach (var genre in _details.Genres)
+                {
+                    <MudChip T="string" Icon="@Icons.Material.Filled.LocalOffer" OnClick="@(() => OnGenreClicked(genre.Id))">@genre.Name</MudChip>
+                }
+            </MudStack>
+
+            <MudText Typo="Typo.body1" Class="mt-4">@_details.Overview</MudText>
+        </MudStack>
+    </MudStack>
+
+    <MudText Typo="Typo.h5" Class="mt-6 mb-2">Cast</MudText>
+    <MudList T="string">
+        @foreach (var actor in _details.Actors)
+        {
+            <MudListItem T="string" Icon="@Icons.Material.Filled.Person" OnClick="@(() => OnActorClicked(actor))">@actor.Name</MudListItem>
+        }
+    </MudList>
+}

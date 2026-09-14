@@ -1,0 +1,35 @@
+@page "/"
+@using WebClient.Common
+@using WebClient.Features.Actors.Search.Components
+@using WebClient.Features.Movies.Search.Components
+
+<PageTitle>Movies</PageTitle>
+
+@if (_loadError is not null)
+{
+    <MudAlert Severity="Severity.Error" Class="mb-4">@_loadError</MudAlert>
+}
+
+@if (SearchState.Mode == SearchMode.Films)
+{
+    <MudStack Row="true" Spacing="0">
+        <MudPaper Width="260px" Elevation="0" Class="pa-4 flex-shrink-0">
+            <FilterSidebar />
+        </MudPaper>
+
+        <MudDivider Vertical="true" FlexItem="true" />
+
+        <MudStack Class="flex-grow-1 pa-4">
+            <MovieResultsGrid Response="_movieResponse"
+                               PageNumberChanged="OnPageNumberChanged"
+                               PageSizeChanged="OnPageSizeChanged" />
+        </MudStack>
+    </MudStack>
+}
+else
+{
+    <ActorResultsTable Response="_actorResponse"
+                        PageNumberChanged="OnPageNumberChanged"
+                        PageSizeChanged="OnPageSizeChanged"
+                        ActorSelected="OnActorSelected" />
+}

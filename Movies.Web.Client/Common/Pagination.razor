@@ -1,0 +1,10 @@
+<MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="mt-4">
+    <MudSelect T="int" Label="Per page" Value="PageSize" ValueChanged="OnPageSizeChanged" Dense="true" Style="max-width: 120px;">
+        @foreach (var size in PageSizeOptions)
+        {
+            <MudSelectItem Value="size">@size</MudSelectItem>
+        }
+    </MudSelect>
+
+    <MudPagination Count="TotalPages" Selected="PageNumber" SelectedChanged="OnPageNumberChanged" ShowFirstButton="true" ShowLastButton="true" />
+</MudStack>

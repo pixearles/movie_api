@@ -25,6 +25,7 @@ namespace Movies.API.Features.Movies.Search.v1
                         ReleaseDate = m.ReleaseDate,
                         PosterUrl = m.PosterUrl,
                         VoteAverage = m.VoteAverage,
+                        OriginalLanguage = m.OriginalLanguage,
                         Genres = m.MovieGenres.Select(mg => mg.Genre.Name).ToList()
                     }).ToList(),
                     TotalCount = totalCount,

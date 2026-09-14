@@ -2,4 +2,6 @@
   <Project Path="Movies.API/Movies.API.csproj" />
   <Project Path="Movies.Domain/Movies.Domain.csproj" />
   <Project Path="Movies.Infrastructure/Movies.Infrastructure.csproj" />
+  <Project Path="Movies.Web/Movies.Web.csproj" />
+  <Project Path="Movies.Web.Client/Movies.Web.Client.csproj" />
 </Solution>

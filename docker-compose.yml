@@ -26,5 +26,16 @@ services:
       db:
         condition: service_healthy
 
+  web:
+    build:
+      context: .
+      dockerfile: Movies.Web/Dockerfile
+    ports:
+      - "8081:8080"
+    environment:
+      ASPNETCORE_URLS: "http://+:8080"
+    depends_on:
+      - api
+
 volumes:
   moviesdb-data:

@@ -1,0 +1,23 @@
+@using WebClient.Common
+
+@if (Response is null)
+{
+    <MudProgressCircular Indeterminate="true" />
+}
+else
+{
+    <MudTable T="SearchActors.ActorSummary" Items="Response.Actors" Hover="true" OnRowClick="OnRowClicked">
+        <HeaderContent>
+            <MudTh>Name</MudTh>
+        </HeaderContent>
+        <RowTemplate Context="actor">
+            <MudTd>@actor.Name</MudTd>
+        </RowTemplate>
+    </MudTable>
+
+    <Pagination PageNumber="Response.PageNumber"
+                PageSize="Response.PageSize"
+                TotalPages="Response.TotalPages"
+                PageNumberChanged="PageNumberChanged"
+                PageSizeChanged="PageSizeChanged" />
+}

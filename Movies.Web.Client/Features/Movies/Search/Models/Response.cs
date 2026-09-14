@@ -1,4 +1,4 @@
-namespace Movies.API.Features.Movies.Search.v1
+namespace WebClient.Features.Movies.Search
 {
     public partial class SearchMovies
     {
@@ -14,11 +14,11 @@ namespace Movies.API.Features.Movies.Search.v1
         public class MovieSummary
         {
             public int Id {get;set;}
-            public string Title {get;set;} = String.Empty;
+            public string Title {get;set;} = string.Empty;
             public DateTime ReleaseDate {get;set;}
-            public string PosterUrl {get;set;} = String.Empty;
+            public string PosterUrl {get;set;} = string.Empty;
             public decimal VoteAverage {get;set;}
-            public string OriginalLanguage {get;set;} = String.Empty;
+            public string OriginalLanguage {get;set;} = string.Empty;
             public List<string> Genres {get;set;} = [];
         }
     }

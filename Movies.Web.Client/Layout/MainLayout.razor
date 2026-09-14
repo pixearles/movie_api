@@ -1,0 +1,48 @@
+@inherits LayoutComponentBase
+@using WebClient.Common
+
+<MudThemeProvider Theme="AppTheme.Default" />
+<MudPopoverProvider />
+<MudDialogProvider />
+<MudSnackbarProvider />
+
+<MudContainer MaxWidth="MaxWidth.Large" Class="mt-4 mb-8">
+    <div style="background-color:#455A64; border-radius:8px;" class="pa-4 mb-4">
+        <div style="display:flex; align-items:center; gap:16px; width:100%;">
+            <MudIconButton Icon="@Icons.Material.Filled.Theaters" Style="flex:0 0 auto; color:#FFFFFF;" OnClick="OnLogoClicked" />
+            <MudText Typo="Typo.h5" Style="flex:0 0 auto; white-space:nowrap; color:#FFFFFF;">Movies</MudText>
+
+            <div style="flex:0 0 180px;">
+                <MudSelect T="SearchMode" Value="SearchState.Mode" ValueChanged="OnModeChanged" Variant="Variant.Outlined" Dense="true" Style="width:100%; background-color:#FFFFFF; border-radius:4px;">
+                    <MudSelectItem Value="SearchMode.Films">
+                        <MudStack Row="true" Spacing="1" AlignItems="AlignItems.Center">
+                            <MudIcon Icon="@Icons.Material.Filled.Movie" Size="Size.Small" />
+                            <MudText>Films</MudText>
+                        </MudStack>
+                    </MudSelectItem>
+                    <MudSelectItem Value="SearchMode.Actors">
+                        <MudStack Row="true" Spacing="1" AlignItems="AlignItems.Center">
+                            <MudIcon Icon="@Icons.Material.Filled.Person" Size="Size.Small" />
+                            <MudText>Actors</MudText>
+                        </MudStack>
+                    </MudSelectItem>
+                </MudSelect>
+            </div>
+
+            <MudTextField T="string" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search"
+                          Value="_searchTerm" ValueChanged="OnSearchTermChanged" Immediate="false" DebounceInterval="400"
+                          OnKeyDown="OnSearchKeyDown"
+                          Variant="Variant.Outlined" Style="flex:1 1 auto; min-width:0; background-color:#FFFFFF; border-radius:4px;" />
+        </div>
+    </div>
+
+    <div class="mud-background-gray rounded-lg pa-4">
+        @Body
+    </div>
+</MudContainer>
+
+<div id="blazor-error-ui" data-nosnippet>
+    An unhandled error has occurred.
+    <a href="." class="reload">Reload</a>
+    <span class="dismiss">🗙</span>
+</div>

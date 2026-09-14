@@ -1,0 +1,23 @@
+@using WebClient.Common
+
+@if (Response is null)
+{
+    <MudProgressCircular Indeterminate="true" />
+}
+else if (Response.Movies.Count == 0)
+{
+    <MudText>No movies found.</MudText>
+}
+else
+{
+    @foreach (var movie in Response.Movies)
+    {
+        <MovieTile Movie="movie" />
+    }
+
+    <Pagination PageNumber="Response.PageNumber"
+                PageSize="Response.PageSize"
+                TotalPages="Response.TotalPages"
+                PageNumberChanged="PageNumberChanged"
+                PageSizeChanged="PageSizeChanged" />
+}

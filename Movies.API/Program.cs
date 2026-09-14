@@ -18,6 +18,11 @@ builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 builder.Services.AddInfrastructure(builder.Configuration.GetConnectionString("MoviesDb")!);
 
+builder.Services.AddCors(options => options.AddPolicy("Frontend", policy =>
+    policy.WithOrigins(builder.Configuration.GetSection("AllowedOrigins").Get<string[]>() ?? [])
+          .AllowAnyHeader()
+          .AllowAnyMethod()));
+
 // feature slice registration
 builder.Services.AddScoped<SearchMovies.IHandler, SearchMovies.Handler>();
 builder.Services.AddScoped<SearchMovies.IRepository, SearchMovies.Repository>();
@@ -45,6 +50,8 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 
 app.UseHttpsRedirection();
+
+app.UseCors("Frontend");
 
 app.UseAuthorization();
 

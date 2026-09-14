@@ -112,7 +112,7 @@ namespace Movies.API.Features.Movies.Search.v1
             Title = title,
             Overview = string.Empty,
             PosterUrl = string.Empty,
-            OriginalLanguage = string.Empty,
+            OriginalLanguage = "en",
             ReleaseDate = new DateTime(2020, 1, 1),
             VoteAverage = 7.5m,
             VoteCount = 100,
@@ -143,6 +143,7 @@ namespace Movies.API.Features.Movies.Search.v1
             Assert.AreEqual(movie.ReleaseDate, summary.ReleaseDate);
             Assert.AreEqual(movie.PosterUrl, summary.PosterUrl);
             Assert.AreEqual(movie.VoteAverage, summary.VoteAverage);
+            Assert.AreEqual(movie.OriginalLanguage, summary.OriginalLanguage);
             CollectionAssert.AreEquivalent(new[] { "Action", "Drama" }, summary.Genres);
         }
 

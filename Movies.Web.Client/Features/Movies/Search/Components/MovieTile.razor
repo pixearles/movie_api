@@ -1,0 +1,14 @@
+<MudPaper Class="d-flex pa-2 mb-3" Elevation="2" Style="cursor:pointer;" @onclick="OnClicked">
+    <MudImage Src="@Movie.PosterUrl" Alt="@Movie.Title" ObjectFit="ObjectFit.Cover" Height="180" Width="120" Class="rounded flex-shrink-0" />
+    <MudStack Class="ml-4" Justify="Justify.Center" Spacing="1">
+        <MudText Typo="Typo.h6">@Movie.Title</MudText>
+        <MudStack Row="true" Spacing="2">
+            <MudText Typo="Typo.body2">@Movie.ReleaseDate.ToString("dd/MM/yyyy")</MudText>
+            <MudText Typo="Typo.body2">@Movie.OriginalLanguage.ToUpperInvariant()</MudText>
+        </MudStack>
+        <MudStack Row="true" Spacing="1" AlignItems="AlignItems.Center">
+            <MudText Typo="Typo.body1">@Movie.VoteAverage.ToString("0.0")</MudText>
+            <MudIcon Icon="@Icons.Material.Filled.Star" Style="color:#F9A825;" Size="Size.Small" />
+        </MudStack>
+    </MudStack>
+</MudPaper>

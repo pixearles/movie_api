@@ -4,12 +4,13 @@ A read-focused movie search API built for the Optix technical test, using the [9
 
 ## Tech stack
 
-- **.NET 10 / ASP.NET Core Web API**, using conventional `[ApiController]` controllers rather than Minimal APIs — a more familiar shape for a production service, and consistent with the job's emphasis on ASP.NET Core experience.
-- **Vertical slice architecture**, no MediatR. Each feature lives in its own folder (`Features/{Feature}/{SubFeature}/v1/`) with its own request/response models, handler, repository, and validator, wired together via a shared partial class per sub-feature. A separate `{SubFeature}Controller` (non-partial) references into that shared class. This avoids the shared/anaemic layers a more traditional layered architecture tends to accumulate, and keeps each feature fully self-contained — no repository or handler is shared across slices.
+- **.NET 10 / ASP.NET Core Web API**, using conventional `[ApiController]` controllers rather than Minimal APIs — a more familiar shape for a production service, one I work with daily.
+- **Vertical slice architecture**, no MediatR. Each feature lives in its own folder (`Features/{Feature}/{SubFeature}/v1/`) with its own request/response models, handler, repository, and validator, wired together via a shared partial class per subfeature. A separate `{SubFeature}Controller` (non-partial) references into that shared class. This avoids the shared/anaemic layers a more traditional layered architecture tends to accumulate, and keeps each feature fully self-contained, no repository or handler is shared across slices.
 - **EF Core against SQL Server**, chosen over PostgreSQL and SQLite mostly due to experience with SQLServer.
 - **FluentValidation** for request validation, called explicitly from the controller (via a small shared `ApiControllerBase` helper) rather than inside the handler, so a bad request never reaches business logic and handlers can assume valid input.
 - **No authentication.** Every endpoint is public and read-only, and the brief's requirements never call for a user concept. Deliberately left out rather than built speculatively — see "Design decisions" below.
-- **Docker + Docker Compose** for deployment — a `db` service (SQL Server, Linux container) and an `api` service, with a healthcheck ensuring the API waits for the database to be ready before starting.
+- **Blazor WebAssembly + MudBlazor** (`Movies.Web` / `Movies.Web.Client`) for the front end — see "Front end" below.
+- **Docker + Docker Compose** for deployment — a `db` service (SQL Server, Linux container), an `api` service, and a `web` service (the front end), with healthchecks/dependencies ensuring each waits for what it needs before starting.
 
 ## Running the project
 
@@ -28,15 +29,21 @@ To apply migrations and seed without starting the web server:
 dotnet run --project Movies.API -- migrate
 ```
 
+With the API running, the front end is a separate process:
+```
+dotnet run --project Movies.Web
+```
+This starts the Blazor Web App host, which serves the WebAssembly client; the client calls `Movies.API` directly from the browser (see "Front end" below), so the API needs to already be running. Watch the console output for the actual URL (`https://localhost:7135` by default) and open it in a browser.
+
 ### With Docker
 
 ```
 docker compose up --build
 ```
 
-This builds the API image, starts a SQL Server container, waits for it to report healthy, then starts the API — which runs the same migrate-and-seed step as above against the fresh containerised database. First run will take a few minutes (image downloads plus a full seed of ~9,800 rows); subsequent runs are faster.
+This builds the API and front-end images, starts a SQL Server container, waits for it to report healthy, then starts the API and the front end — the API runs the same migrate-and-seed step as above against the fresh containerised database. First run will take a few minutes (image downloads plus a full seed of ~9,800 rows); subsequent runs are faster.
 
-Once running, the API is available at `http://localhost:8080`.
+Once running, the API is available at `http://localhost:8080` and the front end at `http://localhost:8081`.
 
 **Note:** the SQL Server container's `SA_PASSWORD` is hardcoded in `docker-compose.yml` for convenience in this exercise. A real deployment would pull this from a secrets manager or environment-specific configuration rather than committing it to source control, in my current position we use AzureDevOps KeyVault.
 
@@ -100,6 +107,20 @@ Search and page genres by name — structurally identical to `SearchActors`.
 
 Response includes the page of results plus `totalCount`, `pageNumber`, `pageSize`, and `totalPages`. Each genre entry has `id` and `name`.
 
+## Front end
+
+A minimal Blazor front end sits alongside the API, split into two projects using .NET's standard Blazor Web App template:
+
+- **`Movies.Web`** — the ASP.NET Core host. Serves the WebAssembly bundle and static assets; carries no business logic of its own.
+- **`Movies.Web.Client`** — the Blazor WebAssembly project containing all the interactive UI. Runs entirely in the browser and calls `Movies.API`'s endpoints directly over HTTP (CORS is enabled on the API for this project's origin) rather than routing requests through the host as a backend-for-frontend.
+
+**MudBlazor** was chosen as the component library. The main reason for this was my familiarity with it from my day to day work — but it holds up well on its own merits for a project like this:
+- The components available provide a very nice UX
+- Not needing js, and keeping everything in C# keeps the code standardised and easier to read and manage across the whole solution.
+- I've been using it for several years now, and found it's improved the quality, and ease of development of front ends.
+
+Like the API, the client is organised as vertical slices, under `Movies.Web.Client/Features/{Feature}/{SubFeature}/`, mirroring the API's own feature names and `Request`/`Response` shapes field-for-field — deliberately *without* a `v1` segment, since API versioning is the server's concern, not the client's; a future `v2` only means changing a URL string inside that slice's `ApiClient.cs`, not restructuring folders.
+
 ## Design decisions
 
 A few choices worth explaining rather than leaving implicit:
@@ -116,3 +137,12 @@ In line with the disciplined, transparent use of AI tools this role is looking f
 - Once that pattern was proven out and stable, a Claude Code skill (`/add-slice`) was created to scaffold new slices following the same structure — nested partial class, `Request`/`Response`/`Validator`/`Handler`/`Repository`, separate controller, FluentValidation wiring. This was used to generate the `SearchActors` and `SearchGenres` slices, which closely mirror `SearchMovies` in shape.
 - Output from the skill was reviewed before being committed, not accepted blindly — the point of building the skill after establishing the pattern by hand, rather than generating everything from the start, was to make sure the pattern itself was sound and well-understood before automating its repetition. That review caught the skill conflating a slice's folder name with its partial class name (producing an incorrectly-named `SearchActors`/`GetAllGenres`), which was fixed by adding an explicit, separate step to the skill for confirming the class name.
 - A second skill (`/add-tests`) was created to generate MSTest + Moq tests for a slice once its `Handler.cs`/`Validator.cs` are actually implemented, deriving test cases from the real logic rather than templating blindly.
+
+## Further development
+
+If I continued to develop the app there are several things I would like to add and extend:
+
+- Role name against the actor for a movie
+- Headshots for actors
+- Adding the ability to display crew details also
+- Additional information against actors

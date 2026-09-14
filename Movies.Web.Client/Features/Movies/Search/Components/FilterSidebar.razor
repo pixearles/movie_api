@@ -1,0 +1,40 @@
+@using WebClient.Features.Actors.Search
+@using WebClient.Features.Genres.GetAll
+
+<MudExpansionPanels MultiExpansion="true">
+    <MudExpansionPanel Text="Genres">
+        @if (_genres is null)
+        {
+            <MudProgressCircular Indeterminate="true" Size="Size.Small" />
+        }
+        else
+        {
+            @foreach (var genre in _genres)
+            {
+                <MudCheckBox T="bool" Label="@genre.Name"
+                             Value="SearchState.SelectedGenreIds.Contains(genre.Id)"
+                             ValueChanged="@(_ => OnGenreToggled(genre.Id))" />
+            }
+        }
+    </MudExpansionPanel>
+
+    <MudExpansionPanel Text="Actors">
+        @if (SearchState.SelectedActors.Count > 0)
+        {
+            <MudStack Row="true" Wrap="Wrap.Wrap" Spacing="1" Class="mb-2">
+                @foreach (var actor in SearchState.SelectedActors)
+                {
+                    <MudChip T="string" OnClose="@(_ => OnActorFilterRemoved(actor.Id))">@actor.Name</MudChip>
+                }
+            </MudStack>
+        }
+
+        <MudAutocomplete T="SearchActors.ActorSummary"
+                          Value="_actorSearchValue"
+                          Label="Search actors"
+                          SearchFunc="SearchActorsAsync"
+                          ToStringFunc="@(a => a?.Name ?? string.Empty)"
+                          ValueChanged="OnActorSelected"
+                          Clearable="true" />
+    </MudExpansionPanel>
+</MudExpansionPanels>
