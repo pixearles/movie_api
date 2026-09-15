@@ -6,6 +6,12 @@ namespace WebClient.Common
         Actors
     }
 
+    public enum MovieSortColumn
+    {
+        Title,
+        ReleaseDate
+    }
+
     public class SelectedActor
     {
         public int Id {get;set;}
@@ -20,6 +26,9 @@ namespace WebClient.Common
         public List<SelectedActor> SelectedActors {get;} = [];
         public int PageNumber {get;private set;} = 1;
         public int PageSize {get;private set;} = 20;
+        public MovieSortColumn MovieSortColumn {get;private set;} = MovieSortColumn.Title;
+        public bool MovieSortByDescending {get;private set;} = false;
+        public bool ActorSortByDescending {get;private set;} = false;
 
         public event Action? StateChanged;
 
@@ -78,12 +87,36 @@ namespace WebClient.Common
             NotifyChanged();
         }
 
+        public void SetMovieSort(MovieSortColumn column)
+        {
+            if (MovieSortColumn == column)
+                MovieSortByDescending = !MovieSortByDescending;
+            else
+            {
+                MovieSortColumn = column;
+                MovieSortByDescending = false;
+            }
+
+            PageNumber = 1;
+            NotifyChanged();
+        }
+
+        public void SetActorSort(bool descending)
+        {
+            ActorSortByDescending = descending;
+            PageNumber = 1;
+            NotifyChanged();
+        }
+
         public void Reset()
         {
             SearchTerm = null;
             SelectedGenreIds.Clear();
             SelectedActors.Clear();
             PageNumber = 1;
+            MovieSortColumn = MovieSortColumn.Title;
+            MovieSortByDescending = false;
+            ActorSortByDescending = false;
             NotifyChanged();
         }
 

@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Components;
+using MudBlazor;
 using WebClient.Common;
 using WebClient.Features.Actors.Search;
 using WebClient.Features.Genres.GetAll;
@@ -23,6 +24,18 @@ namespace WebClient.Features.Movies.Search.Components
         private void OnSearchStateChanged() => InvokeAsync(StateHasChanged);
 
         private void OnGenreToggled(int genreId) => SearchState.ToggleGenre(genreId);
+
+        private string SortIconFor(MovieSortColumn column) =>
+            SearchState.MovieSortColumn != column
+                ? Icons.Material.Filled.UnfoldMore
+                : SearchState.MovieSortByDescending
+                    ? Icons.Material.Filled.ArrowDownward
+                    : Icons.Material.Filled.ArrowUpward;
+
+        private string SortButtonStyle(MovieSortColumn column) =>
+            SearchState.MovieSortColumn == column
+                ? "border-radius:0; justify-content:flex-start; white-space:nowrap; background-color:#455A64; color:#FFFFFF;"
+                : "border-radius:0; justify-content:flex-start; white-space:nowrap; background-color:#FFFFFF; color:#455A64;";
 
         private async Task<IEnumerable<SearchActors.ActorSummary>> SearchActorsAsync(string searchTerm, CancellationToken cancellationToken)
         {

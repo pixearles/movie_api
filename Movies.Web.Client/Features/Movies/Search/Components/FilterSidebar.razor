@@ -1,8 +1,26 @@
+@using WebClient.Common
 @using WebClient.Features.Actors.Search
 @using WebClient.Features.Genres.GetAll
 
+<MudText Typo="Typo.subtitle2" Class="mb-1">Sort by</MudText>
+<div class="d-flex flex-column mb-4" style="width:100%; border:1px solid #455A64; border-radius:8px; overflow:hidden;">
+    <MudButton Variant="Variant.Text"
+               StartIcon="@SortIconFor(MovieSortColumn.Title)"
+               Style="@($"border-bottom:1px solid #455A64; {SortButtonStyle(MovieSortColumn.Title)}")"
+               OnClick="@(() => SearchState.SetMovieSort(MovieSortColumn.Title))">
+        Title
+    </MudButton>
+    <MudButton Variant="Variant.Text"
+               StartIcon="@SortIconFor(MovieSortColumn.ReleaseDate)"
+               Style="@SortButtonStyle(MovieSortColumn.ReleaseDate)"
+               OnClick="@(() => SearchState.SetMovieSort(MovieSortColumn.ReleaseDate))">
+        Release Date
+    </MudButton>
+</div>
+
+<MudText Typo="Typo.subtitle2" Class="mb-1">Filter by</MudText>
 <MudExpansionPanels MultiExpansion="true">
-    <MudExpansionPanel Text="Genres">
+    <MudExpansionPanel Text="Genres" Expanded="true">
         @if (_genres is null)
         {
             <MudProgressCircular Indeterminate="true" Size="Size.Small" />

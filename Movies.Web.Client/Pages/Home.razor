@@ -29,6 +29,8 @@
 else
 {
     <ActorResultsTable Response="_actorResponse"
+                        SortByDescending="SearchState.ActorSortByDescending"
+                        SortByDescendingChanged="OnActorSortChanged"
                         PageNumberChanged="OnPageNumberChanged"
                         PageSizeChanged="OnPageSizeChanged"
                         ActorSelected="OnActorSelected" />

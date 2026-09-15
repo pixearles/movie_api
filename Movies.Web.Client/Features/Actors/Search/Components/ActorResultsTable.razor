@@ -8,7 +8,13 @@ else
 {
     <MudTable T="SearchActors.ActorSummary" Items="Response.Actors" Hover="true" OnRowClick="OnRowClicked">
         <HeaderContent>
-            <MudTh>Name</MudTh>
+            <MudTh>
+                <MudTableSortLabel T="SearchActors.ActorSummary"
+                                    SortDirection="@(SortByDescending ? SortDirection.Descending : SortDirection.Ascending)"
+                                    SortDirectionChanged="@(direction => SortByDescendingChanged.InvokeAsync(direction == SortDirection.Descending))">
+                    Name
+                </MudTableSortLabel>
+            </MudTh>
         </HeaderContent>
         <RowTemplate Context="actor">
             <MudTd>@actor.Name</MudTd>

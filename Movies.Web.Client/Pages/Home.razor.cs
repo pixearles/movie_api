@@ -39,6 +39,8 @@ namespace WebClient.Pages
                         SearchTerm = SearchState.SearchTerm,
                         Genres = SearchState.SelectedGenreIds.Count > 0 ? [.. SearchState.SelectedGenreIds] : null,
                         Actors = SearchState.SelectedActors.Count > 0 ? SearchState.SelectedActors.Select(a => a.Id).ToList() : null,
+                        SortBy = SearchState.MovieSortColumn == MovieSortColumn.ReleaseDate ? "releaseDate" : "title",
+                        SortByDescending = SearchState.MovieSortByDescending,
                         PageNumber = SearchState.PageNumber,
                         PageSize = SearchState.PageSize
                     });
@@ -48,6 +50,7 @@ namespace WebClient.Pages
                     _actorResponse = await ActorsApiClient.SearchActorsAsync(new SearchActors.Request
                     {
                         SearchTerm = SearchState.SearchTerm,
+                        SortByDescending = SearchState.ActorSortByDescending,
                         PageNumber = SearchState.PageNumber,
                         PageSize = SearchState.PageSize
                     });
@@ -64,6 +67,8 @@ namespace WebClient.Pages
         private void OnPageNumberChanged(int page) => SearchState.SetPage(page);
 
         private void OnPageSizeChanged(int size) => SearchState.SetPageSize(size);
+
+        private void OnActorSortChanged(bool descending) => SearchState.SetActorSort(descending);
 
         private void OnActorSelected(SearchActors.ActorSummary actor) =>
             SearchState.FilterMoviesByActor(new SelectedActor { Id = actor.Id, Name = actor.Name });
